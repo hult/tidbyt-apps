@@ -13,12 +13,14 @@ def one_decimal(f):
   return "%s.%s" % (a, b[0])
 
 def main(config):
-  percentage_cached = cache.get("percentage")
-  if percentage_cached != None:
+  number_cached = cache.get("number")
+  if number_cached != None:
     print("Hit! Displaying cached data.")
-    percentage = float(percentage_cached)
+    number = float(number_cached)
+    diff_number = int(cache.get("diff_number"))
+    percentage = float(cache.get("percentage"))
+    diff_percentage = float(cache.get("diff_percentage"))
     date = cache.get("date")
-    diff = float(cache.get("diff"))
   else:
     print("Miss! Calling API.")
     rep = http.get(URL)
@@ -26,24 +28,39 @@ def main(config):
       fail("API request failed with status %d", rep.status_code)
 
     data = rep.json()["registrerade_vaccinationer_doses"][0]
-    percentage = data["f_person_dose_1"] * 100
-    diff = data["diff_f_person_dose_1"]
     date = "%s/%s" % (data["datum_day"], data["datum_month"])
+    number = data["n_person_dose_1"]
+    diff_number = data["diff_n_person_dose_1"]
+    percentage = data["f_person_dose_1"] * 100
+    diff_percentage = data["diff_f_person_dose_1"]
+
+    cache.set("number", str(number), ttl_seconds=TTL)
+    cache.set("diff_number", str(diff_number), ttl_seconds=TTL)
     cache.set("percentage", str(percentage), ttl_seconds=TTL)
+    cache.set("diff_percentage", str(diff_percentage), ttl_seconds=TTL)
     cache.set("date", date, ttl_seconds=TTL)
-    cache.set("diff", str(diff), ttl_seconds=TTL)
 
   return render.Root(
-    render.Box(color="#222", child=
-      render.Row(expanded=True, main_align="space_around", children=[
+    delay=5000,
+    child=render.Box(color="#222", child=
+      render.Row(expanded=True, main_align="start", children=[
         render.Column(expanded=True, main_align="center", children=[
           render.Image(src=ICON)
         ]),
-        render.Column(expanded=True, main_align="space_around", children=[
-          render.Text(date),
-          render.Text("%s%%" % one_decimal(percentage)),
-          render.Text("(+%s%%)" % one_decimal(diff)),
-        ])
+        render.Animation(
+          children=[
+            render.Column(expanded=True, main_align="space_around", children=[
+              render.Text(date),
+              render.Text("%s%%" % one_decimal(percentage)),
+              render.Text("(+%s%%)" % one_decimal(diff_percentage)),
+            ]),
+            render.Column(expanded=True, main_align="space_around", children=[
+              render.Text(date),
+              render.Text("%s" % number),
+              render.Text("(+%s)" % diff_number),
+            ]),
+          ]
+        )
       ])
     )
   )
