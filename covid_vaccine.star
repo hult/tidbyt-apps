@@ -50,12 +50,12 @@ def main(config):
         render.Animation(
           children=[
             render.Column(expanded=True, main_align="space_around", children=[
-              render.Text(date),
+              render.Text(date, color="#55c"),
               render.Text("%s%%" % one_decimal(percentage)),
               render.Text("(+%s%%)" % one_decimal(diff_percentage)),
             ]),
             render.Column(expanded=True, main_align="space_around", children=[
-              render.Text(date),
+              render.Text(date, color="#55c"),
               render.Text("%s" % number),
               render.Text("(+%s)" % diff_number),
             ]),
