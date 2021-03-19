@@ -40,6 +40,7 @@ def main(config):
   date = country_data["datestr"]
   year, month, day = date.split("-")
   if country == "USA":
+    # Poor man's date formatting
     date_string = "%s/%s" % (month.strip("0"), day.strip("0"))
   else:
     date_string = "%s/%s" % (day.strip("0"), month.strip("0"))
