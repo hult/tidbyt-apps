@@ -51,12 +51,12 @@ def main(config):
           children=[
             render.Column(expanded=True, main_align="space_around", children=[
               render.Text(date, color="#55c"),
-              render.Text("%s%%" % one_decimal(percentage)),
+              render.Text("%s%%" % one_decimal(percentage), font="6x13"),
               render.Text("(+%s%%)" % one_decimal(diff_percentage)),
             ]),
             render.Column(expanded=True, main_align="space_around", children=[
               render.Text(date, color="#55c"),
-              render.Text("%s" % number),
+              render.Text("%s" % number, font="6x13"),
               render.Text("(+%s)" % diff_number),
             ]),
           ]
