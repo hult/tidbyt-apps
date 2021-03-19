@@ -8,10 +8,18 @@ URL = "https://www.svt.se/special/articledata/3362/owid_vax.json"
 ICON = base64.decode("iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAyElEQVRIS9WVQRKAIAhF9X4t6qS16H42OOGQIgK6yVVi/tcXgxjkkUIIcfCOuNzbDMI4lgJqYZy7IXRjT2wKgoDekdA4HJnZCQXAsyTocsJ9USO0nXuO3cdlTnwP8IkjwAORrmmkwvSyW5xISUvbuRddEK3n76KY+NGtyJBaHKkaJyMAaE050QAKxONEC3A7MQGAwuWE5KL52y2A7AIh2kRbAQXCNAFWywOgkLpYNnpeANfF2GK4EsA5s9d3RX/+9PHVDhr+/wEP4zBOGb2R0KMAAAAASUVORK5CYII=")
 TTL = 3600
 
-def one_decimal(f):
-  s = "%f" % f
+def decimal(n, d=1):
+  # Format n to d decimal places
+  s = "%f" % n
   a, b = s.split(".")
-  return "%s.%s" % (a, b[0])
+  return "%s.%s" % (a, b[0:d])
+
+def big_number(n):
+  # n if n < 1000000, else x.yzM
+  if n < 1000000:
+    return "%d" % n
+  else:
+    return "%sM" % decimal(n / 1000000, 2)
 
 def main(config):
   data = cache.get("data")
@@ -60,13 +68,13 @@ def main(config):
           children=[
             render.Column(expanded=True, main_align="space_around", children=[
               render.Text("%s %s" % (country, date_string), color="#55c"),
-              render.Text("%s%%" % one_decimal(percentage)),
-              render.Text("(+%s%%)" % one_decimal(diff_percentage)),
+              render.Text("%s%%" % decimal(percentage)),
+              render.Text("(+%s%%)" % decimal(diff_percentage)),
             ]),
             render.Column(expanded=True, main_align="space_around", children=[
               render.Text("%s %s" % (country, date_string), color="#55c"),
-              render.Text("%d" % number),
-              render.Text("(+%d)" % diff_number),
+              render.Text(big_number(number)),
+              render.Text("(+%s)" % big_number(diff_number)),
             ]),
           ]
         )
